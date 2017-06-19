@@ -50,8 +50,8 @@ Write-Output "eth-proxyをダウンロードしました。"
 
 # 設定ファイルとかをダウンロード
 Write-Output "設定ファイルのテンプレートをダウンロードします... URL=$urlEthProxy"
-Invoke-WebRequest -Uri $urlRunEthminerBatTemplate -OutFile "$tempPath\"
-Invoke-WebRequest -Uri $urlEthproxyConfTemplate -OutFile "$tempPath\"
+Invoke-WebRequest -Uri $urlRunEthminerBatTemplate -OutFile "$tempPath\template_run_ethminer.bat"
+Invoke-WebRequest -Uri $urlEthproxyConfTemplate -OutFile "$tempPath\template_eth-proxy.conf"
 Write-Output "設定ファイルのテンプレートをダウンロードしました。"
 
 Write-Output "解凍します"
@@ -60,5 +60,9 @@ Expand-Archive -Path "$tempPath\eth-proxy.zip" -DestinationPath "$mainFolder\$et
 Write-Output "解凍しました"
 
 # 起動用バッチ作成
-# $file_contents = $(Get-Content $filepath) -replace $rep1, $rep2
-# $file_contents > $filepath
+$batText = $(Get-Content "$tempPath\template_run_ethminer.bat")
+$batText > "$mainFolder\$ethminerFolder\bin\run.bat"
+
+# eth-proxyのコンフィグ設置
+$file_contents = $(Get-Content "$tempPath\template_eth-proxy.conf") -replace "__________YOU_ARE_WALLET__________", $wallet
+$file_contents > "$mainFolder\$ethproxyFolder\eth-proxy\eth-proxy.conf"
